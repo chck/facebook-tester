@@ -1,10 +1,21 @@
 facebook-tester
 ===============
 
+##Ruby
+```
+ruby 2.1.3
+```
+
 ##Install
 ```
 brew tap homebrew/science
 brew install opencv
+bundle install --path=vendor/bundle
+```
+
+##Usage
+```
+bundle exec ruby xxx.rb
 ```
 
 ##Memo
