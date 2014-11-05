@@ -17,6 +17,7 @@ class MechanizeTest
     @email = conf["fb_email"]
     @password = conf["fb_pass"]
     @path = "//*[@id='m_newsfeed_stream']"
+#     @path = "//span"
 #    @path = "//article"
     @login_url = "https://m.facebook.com/login.php"
     @home_url = "https://m.facebook.com/home.php"
@@ -45,58 +46,11 @@ class MechanizeTest
       doc = Nokogiri::Slop(page.body)
       doc.xpath(@path).each do |node|
 #      doc.xpath(@path).children.each do |node|
-        p node.to_html#.xpath("//span[@data-sigil='m-feed-voice-subtitle']")
+        open("test.html","a+") do |f|
+          f.puts node.to_html#.xpath("//span[@data-sigil='m-feed-voice-subtitle']")
+        end
       end
     end 
-
-
-=begin
-    CSV.open(ARGV[0],"r").each do |row|
-
-      #げっとここから      
-      #id_num = 12031
-      urls = row[0]#url_1+"#{id_num}"
-      puts Rainbow(urls).green.bright
-      @m.get(urls) do |page|
-        doc = Nokogiri::HTML(page.body)
-        xp1 = doc.xpath(@path_1)
-        xp2 = doc.xpath(@path_2)
-
-        #でーたないない判定
-        data?(xp1)
-        data?(xp2)
-
-        #hashにへんかん
-        su_xp1 = []
-        su_xp2 = []
-        count = 0
-        xp1.each do |row|
-          su_xp1 << row.text.gsub(/(\r\n|\r|\n)/,"").gsub(/(^\s+)|(\s+$)/,"")
-        end
-
-        puts su_xp1
-        # xp2.each do |row|
-        #   if(count==12)
-        #     su_xp2 << @home+row.elements.attribute("src").value  #画像のURLをげっと！！！
-        #   elsif(count==4)
-        #     su_xp2 << row.text.gsub(/(\r\n|\r|\n)/,"").gsub(/(^\s+)|(\s+$)|(                           ).*$/,"")#すぺーすさよなら
-        #   else
-        #     su_xp2 << row.text.gsub(/(\r\n|\r|\n)/,"").gsub(/(^\s+)|(\s+$)/,"")
-        #   end
-        #   count+=1
-        # end
-        # ary = [su_xp1,su_xp2].transpose
-        # h = Hash[*ary.flatten]#.to_json
-
-        # puts Rainbow(" G E T ").yellow.inverse
-        # open("su-list2.txt","a+") do |f|    
-        #   f.puts h.values.join(",")
-        # end
-        # sleep(0.5)  #30フレームだけ待ってやろう
-      end
-
-    end
-=end
   end
 end
 
