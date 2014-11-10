@@ -16,9 +16,7 @@ class MechanizeTest
     conf = YAML::load(open("../API.yaml"))
     @email = conf["fb_email"]
     @password = conf["fb_pass"]
-    @path = "//*[@id='m_newsfeed_stream']"
-#     @path = "//span"
-#    @path = "//article"
+    @xpath = "//a"
     @login_url = "https://m.facebook.com/login.php"
     @home_url = "https://m.facebook.com/home.php"
     @is_login = false
@@ -32,27 +30,42 @@ class MechanizeTest
           form.field_with(:name => 'pass').value = @password
         end.click_button
       end
-#      @is_login = !@m.page.uri.to_s.match('home_php').nil?
       @is_login = true
     end
   end
 
   def main
     login(@email, @password)
-    puts Rainbow("success").yellow.bright
-    puts Rainbow(@home_url).green.bright
+    result = ""
+    nodes = []
     @m.get(@home_url) do |page|
-#      doc = Nokogiri::HTML(page.body)
       doc = Nokogiri::Slop(page.body)
-      doc.xpath(@path).each do |node|
-#      doc.xpath(@path).children.each do |node|
-        open("test.html","a+") do |f|
-          f.puts node.to_html#.xpath("//span[@data-sigil='m-feed-voice-subtitle']")
+      doc.xpath(@xpath).each do |node|
+        nodes << node
+        #open("test.html","a+") do |f|
+        n=node.text
+#        open("test.txt","a+") do |f|
+          puts n
+#        end
+        if /#{$text}/ =~ n
+          result = node.to_html
         end
       end
     end 
+    p nodes.size
+    return result
   end
 end
 
-mt = MechanizeTest.new
-mt.main
+$text = "引っ掛けたい文面"
+t0 = Time.now
+#loop do
+  puts Rainbow(Time.now-t0).green.bright
+  mt = MechanizeTest.new
+  puts Rainbow(res = mt.main).yellow.bright
+#  break unless res.empty?
+#  sleep([*5..10].sample)
+#end
+
+puts "---end---"
+puts Rainbow(Time.now-t0).magenta.bright

@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 #-*- coding:utf-8 -*-
 require 'selenium-webdriver'
+require 'webdriver-user-agent'
 require 'rainbow'
 require 'yaml'
 
@@ -11,15 +12,8 @@ class SeleniumTest
     @email = conf["fb_email"]
     @pass = conf["fb_pass"]
     #@bsr = Selenium::WebDriver.for :firefox
-    @bsr = Selenium::WebDriver.for :chrome
-    #browser.visible = false
-    #@path = "//*[@id='m_newsfeed_stream']/div[3]/section[2]/article[4]"
-#    @path = "//*[@id='m_newsfeed_stream']"
-#    @path1 = "//span"
-#    @path2 = "//div"
-    @xpath = "//i" #全画像マッチ
-    @imagepath = Time.now.to_s.gsub(/\+.*/,"").gsub(/^20|\s|-|:/,"")
-    system("mkdir #{@imagepath}") unless File.exist?(@imagepath)
+    @bsr = Webdriver::UserAgent.driver(:browser => :chrome, :agent => :iphone, :orientation => :portrait)
+    @xpath = "//div"
   end
 
   def main
@@ -27,48 +21,46 @@ class SeleniumTest
     @bsr.find_element(:name,"email").send_key @email
     @bsr.find_element(:name,"pass").send_key @pass
     @bsr.find_element(:name,"login").click
-
-    urls = []
-    @bsr.find_elements(:xpath,@xpath).each do |node|
-      n=node.attribute("style")
-      if /.*background-image: url\((.*?)\)/ =~ n
-        urls << $1
-      end
-#      t=node.text
-#      if t=="広告"
-#        p node.find_element(:xpath,"//span").text
-#      end
+    
+    100.times do
+      @bsr.action.send_keys(:space).perform
     end
 
-    s_urls = []
-    urls.each do |url|
-      if url.size>70
-        s_urls << url
+    sleep(1)
+
+    texts = []
+    result = ""
+    begin
+      @bsr.find_elements(:xpath,@xpath).each do |node|
+        t=node.text
+        if /#{$reg}/ =~ t
+          result=t
+        end
       end
+    rescue
+      p=""
     end
-
-    #puts s_urls
-    puts Rainbow(@imagepath).yellow.bright
-
-    save_file(s_urls)
-    puts Rainbow("-----download end-----").magenta
-    @bsr.save_screenshot("#{@imagepath}/screenshot.png")
+    #@bsr.save_screenshot("sc/#{$audience_num}-#{(Time.now-0).round}.png")
     @bsr.quit
-  end
-
-  def save_file(urls)
-    i=0
-    urls.each do |url|
-      filename = File.basename(url)
-      open("#{@imagepath}/#{i+=1}.png", 'wb') do |file|
-        file.puts Net::HTTP.get_response(URI.parse(url)).body
-      end
-    end
+    return result
   end
 end
 
-loop do
+$audience_num = 30
+
+$reg = "拾いたい文面"
+t0 = Time.now
+i=0
+res=""
+while res.empty? do
+  $elapsed = (Time.now-t0-(7.5*i)).round
+  puts Rainbow("[#{i+=1}] #{$elapsed} sec").green.bright
   st = SeleniumTest.new
-  st.main
-  sleep(10)
+  res=st.main
+  puts Rainbow(res).yellow.bright
+  puts "-------------------------"
+  sleep([*5..10].sample)
 end
+
+puts Rainbow($elapsed).magenta.bright
+puts $audience_num
