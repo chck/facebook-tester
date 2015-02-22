@@ -1,0 +1,33 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    addressable (2.3.6)
+    childprocess (0.5.5)
+      ffi (~> 1.0, >= 1.0.11)
+    faraday (0.9.0)
+      multipart-post (>= 1.2, < 3)
+    ffi (1.9.6)
+    koala (1.10.1)
+      addressable
+      faraday
+      multi_json
+    multi_json (1.10.1)
+    multipart-post (2.0.0)
+    rainbow (2.0.0)
+    ruby-opencv (0.0.13)
+    rubyzip (1.1.6)
+    selenium-webdriver (2.44.0)
+      childprocess (~> 0.5)
+      multi_json (~> 1.0)
+      rubyzip (~> 1.0)
+      websocket (~> 1.0)
+    websocket (1.2.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  koala
+  rainbow
+  ruby-opencv
+  selenium-webdriver
